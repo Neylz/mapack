@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mapack"
+description = "Config-driven Minecraft map packer CLI"
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["minecraft", "cli", "packaging", "jsonc"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Operating System :: OS Independent",
+  "Environment :: Console",
+]
+dependencies = [
+  "click>=8.1,<9"
+]
+dynamic = ["version"]
+
+[project.scripts]
+mapack = "app.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["app*", "config*", "core*", "transforms*"]

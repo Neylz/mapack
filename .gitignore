@@ -1,6 +1,8 @@
 build/
 dist/
 out/
+output/
+examples/src/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

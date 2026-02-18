@@ -1,0 +1,192 @@
+{
+	"globals": {
+		"variables": {
+			"map": {
+				"name": "From The shElves",
+				"version": "1.2.3",
+				"mc_version": "1.21.11"
+			},
+			"target": {
+				"name": "global",
+				"directory": "./output"
+			},
+			"sources": {
+				"map": "./src/map",
+				"rp": {
+					"src": "./src/rp",
+					"git_url": "https://github.com/SurenaStudio/Holiday25-RP"
+				},
+				"icon": "./src/icon.png"
+			}
+		},
+		// is recomputed for each export, so variables can be overridden by export-specific variables
+		// computed in the order they are defined.
+		"precomputed_vars": {
+			"map.semver": "{map.version}+{target.name}-{map.mc_version}",
+			"artifact.basename": "{map.name} {map.semver}.zip"
+		},
+		"artifacts": {
+			// RP
+			"rp": {
+				// src is an auto-copy transform from the source folder to the artifact workdir.
+				"src": "{sources.rp.src}",
+				"transforms": [
+					// check if the source folder is empty (i.e. files haven't been cloned yet)
+					{
+						"type": "conditional",
+						"id": "check_files",
+
+						"op": "==",
+						"a": "count_files('.', recursive=false, include_dirs=true)",
+						"b": 0,
+
+						"then": {
+							"type": "git:clone",
+							"id": "git_clone_rp",
+
+							"repo_url": "https://github.com/SurenaStudio/Holiday25-RP",
+							"branch": "main",
+							"dest": "."
+						},
+						"else": {
+							"type": "git:pull",
+							"id": "git_pull_rp",
+
+							"repo_dir": ".",
+							"branch": "main",
+
+							"catch": {
+								"type": "log",
+								"id": "log_pull_failed",
+								"message": "Failed to pull latest changes for RP. Proceeding with existing files."
+							}
+						}
+					}
+				],
+				"export": {
+					"enabled": true,
+					"dest": "{target.directory}/[RP] {artifact.basename}",
+					"zipped": true
+				}
+			},
+			// core map
+			"map_core": {
+				"src": "{sources.map}",
+				"transforms": [
+					{
+						"type": "copy",
+						"id": "copy_icon",
+
+						"src": "{sources.icon}",
+						"dest": "icon.png"
+					},
+					{
+						"type": "mc:feature",
+						"id": "mcfeature_delete_dims",
+
+						"feature": "delete_dimensions",
+						"args": {
+							"keep": [
+								"minecraft:overworld"
+							]
+						}
+
+					}
+				]
+			},
+			// map only
+			"release_map_only": {
+				"depends_on": [
+					"map_core"
+				],
+				"src": {
+					"artifact": "map_core"
+				},
+				"export": {
+					"enabled": true,
+					"dest": "{target.directory}/[Map Only] {artifact.basename}",
+					"zipped": true
+				}
+			},
+			// bundled map + RP (singleplayer standalone)
+			"release_bundled": {
+				"depends_on": [
+					"map_core",
+					"rp"
+				],
+				"src": {
+					"artifact": "map_core"
+				},
+				"transforms": [
+					{
+						"type": "copy",
+						"id": "copy_rp_to_map",
+
+						"src": {
+							"artifact": "rp",
+							// without output, it would copy from the workspace the files.
+							// with output, it copies from the artifact output (i.e. the zip file)
+							"output": true
+						},
+						"dest": "resources.zip"
+					}
+				],
+				"export": {
+					"enabled": true,
+					"dest": "{target.directory}/[Map Standalone] {artifact.basename}",
+					"zipped": true
+				}
+			}
+		}
+	},
+	"targets": {
+		// generates the common definitions
+		"global": {
+			"use_global": {
+				"use_all": true
+			}
+		},
+
+		// overrride the global parameters and export definitions for realms release
+		"realms": {
+			"use_global": {
+				"use_all": true
+			},
+			
+			"variables": {
+				"target": {
+					"name": "realms"
+				}
+			},
+			"artifacts": {
+				"map_core": {
+					"mod_transforms": [
+						{
+							"op": "insert",
+							"ref": "mcfeature_delete_dims",
+							"transform": {
+								"type": "copy",
+								"id": "copy_surena_marker",
+
+								"src": "./src/surena.png",
+								"dest": "surena.png"
+							}
+						},
+						{
+							"op": "replace",
+							"ref": "copy_icon",
+							"transform": {
+								"type": "copy",
+								"id": "copy_realms_icon",
+
+								"src": "./src/surena.png",
+								"dest": "icon.png"
+							}
+						}
+					]
+				}
+			}
+		}
+
+	}
+}
