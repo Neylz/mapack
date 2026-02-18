@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=69", "wheel"]
+requires = ["setuptools>=69", "setuptools-scm[toml]>=8", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -29,3 +29,9 @@ mapack = "app.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["app*", "config*", "core*", "transforms*"]
+
+[tool.setuptools_scm]
+tag_regex = "^(?P<version>\\d+\\.\\d+\\.\\d+)$"
+version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
+fallback_version = "0.0.0"
