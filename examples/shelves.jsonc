@@ -8,15 +8,15 @@
 			},
 			"target": {
 				"name": "global",
-				"directory": "./output"
+				"directory": "./out"
 			},
 			"sources": {
-				"map": "./src/map",
+				"map": "./map",
 				"rp": {
-					"src": "./src/rp",
+					"src": "./rp",
 					"git_url": "https://github.com/SurenaStudio/Holiday25-RP"
 				},
-				"icon": "./src/icon.png"
+				"icon": "./icon.png"
 			}
 		},
 		// is recomputed for each export, so variables can be overridden by export-specific variables
@@ -168,7 +168,7 @@
 								"type": "copy",
 								"id": "copy_surena_marker",
 
-								"src": "./src/surena.png",
+								"src": "./surena.png",
 								"dest": "surena.png"
 							}
 						},
@@ -179,7 +179,7 @@
 								"type": "copy",
 								"id": "copy_realms_icon",
 
-								"src": "./src/surena.png",
+								"src": "./icon_RMA_x2.png",
 								"dest": "icon.png"
 							}
 						}
